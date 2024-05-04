@@ -1,6 +1,6 @@
 import R from 'ramda';
 import * as O from 'fp-ts/Option'
-import { pipe } from 'fp-ts/function'
+import { flow, pipe } from 'fp-ts/function'
 
 type Split = (delim: string) => (str: string) => string[]
 const split: Split = (delim) => (str) => str.split(delim);
@@ -164,16 +164,18 @@ const __div = ([a, b]: number[]) => {
   return O.some(b / a);
 }
 
-console.log(
-  pipe(
-    '3,15',
-    __split(','),
-    O.flatMap(__strsToNumber),
-    O.flatMap(__div),
-    O.map(double),
-    O.match(
-      () => 'no result', // onNone handler
-      (res) => `Result: ${res}` // onSome handler
-    )
+const g = flow(
+  __split(','),
+  O.flatMap(__strsToNumber),
+  O.flatMap(__div),
+  O.map(double),
+  O.match(
+    () => 'no result', // onNone handler
+    (res) => `Result: ${res}` // onSome handler
   )
+);
+console.log(
+  '3,15', g('3,15'), '\n',
+  'x,15', g('x,15'), '\n',
+  '15', g('15'), '\n',
 );
