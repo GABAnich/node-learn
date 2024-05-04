@@ -33,4 +33,11 @@ console.log(
   'not_a_number', f('not_a_number'), '\n',
 );
 
+// {ValueOrError} Monad
 
+type ValueOrError<T> = {
+  value?: T;
+  error?: string;
+}
+type WrapValueOrError = <T>(value: T) => ValueOrError<T>
+const wrapValueOrError: WrapValueOrError = (value) => ({ value });
