@@ -6,7 +6,7 @@ const split: Split = (delim) => (str) => str.split(delim);
 type StrToNumber = (str: string) => number;
 const strToNumber: StrToNumber = (str) => parseFloat(str);
 
-type Div = ([a, b]: [number, number]) => number;
+type Div = (arr: number[]) => number;
 const div: Div = ([a, b]) => b / a;
 
 console.log(
@@ -15,8 +15,10 @@ console.log(
   div([2, 10]),
 );
 
-/*
+const f = R.compose(div, R.map(strToNumber), split(','))
+
 console.log(
-  R.compose(div, strToNumber, split)('1,2')
+  f('1,2'),
+  f('2,10'),
+  f('3,15'),
 );
-*/
