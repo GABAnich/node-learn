@@ -1,5 +1,5 @@
 import * as E from 'fp-ts/Either';
-import { pipe } from 'fp-ts/function'
+import { pipe, identity } from 'fp-ts/function'
 
 interface User {
   isDeleted: boolean;
@@ -58,7 +58,7 @@ const declarative: F = (user) => pipe(
   E.map(addEmail),
   E.flatMap(addText),
   E.map(removeUser),
-  E.foldW((e) => ({ errMessage: e }), (a) => a),
+  E.foldW((e) => ({ errMessage: e }), identity),
 );
 
 console.log(imperative(validUser), declarative(validUser), '\n');
