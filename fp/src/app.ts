@@ -33,18 +33,23 @@ const imperative: F = (user) => {
 
 const isUserValid = (user: User): boolean => !user.isDeleted;
 const addEmail = (user: User) => ({ user, email: user.email });
-type AddText = (res: { user: User, email: string }) => { user: User, email: string, text: string };
-const addText: AddText = (res) => ({
-  ...res,
-  text: `Hello, ${res.user.name.toUpperCase()}. The video ${res.user?.lastViewedVideo?.title} has ${res.user?.lastViewedVideo?.likesNumber} likes`,
-});
+
+type AddText = (res: { user: User, email: string }) => O.Option<{ user: User, email: string, text: string }>;
+const addText: AddText = (res) => {
+  if (!res.user.lastViewedVideo) return O.none;
+  return O.some({
+    ...res,
+    text: `Hello, ${res.user.name.toUpperCase()}. The video ${res.user.lastViewedVideo.title} has ${res.user.lastViewedVideo.likesNumber} likes`,
+  })
+};
+
 type RemoveUser = (res: { user: User, email: string, text: string }) => { email: string; text: string };
 const removeUser: RemoveUser = (res) => ({ email: res.email, text: res.text });
 const declarative: F = (user) => pipe(
   user,
   O.fromPredicate(isUserValid),
   O.map(addEmail),
-  O.map(addText),
+  O.flatMap(addText),
   O.map(removeUser),
   O.matchW(
     () => ({ errMessage: 'something went wrong' }),
