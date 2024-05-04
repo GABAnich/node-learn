@@ -165,10 +165,10 @@ const __div = ([a, b]: number[]) => {
 }
 
 const g = flow(
-  __split(','),
-  O.flatMap(__strsToNumber),
-  O.flatMap(__div),
-  O.map(double),
+  __split(','), // 3,15 { _tag: 'Some', value: [ '3', '15' ] }
+  O.flatMap(__strsToNumber), // 3,15 { _tag: 'Some', value: [ 3, 15 ] }
+  O.flatMap(__div), // 3,15 { _tag: 'Some', value: 5 }
+  O.map(double), // 3,15 { _tag: 'Some', value: 10 }
   O.match(
     () => 'no result', // onNone handler
     (res) => `Result: ${res}` // onSome handler
