@@ -38,6 +38,18 @@ console.log(
 type ValueOrError<T> = { value: T } | {error: string };
 const wrapValueOrError = <T>(value: T): ValueOrError<T> => ({ value });
 
+/*
+type _Split = (delim: string) => (str: string) => string[]
+const _split: _Split = (delim) => (str) => str.split(delim);
+*/
+
+type _StrToNumber = (str: string) => ValueOrError<number>;
+const _strToNumber: _StrToNumber = (str) => {
+  const value = parseFloat(str);
+  if (isNaN(value)) return { error: "not a number" };
+  return { value };
+};
+
 type _Div = (arr: number[]) => ValueOrError<number>;
 const _div: _Div = ([a, b]) => {
   if (a === 0) return { error: "can't divide by 0" };
