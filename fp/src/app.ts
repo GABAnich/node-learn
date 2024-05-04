@@ -57,3 +57,7 @@ const _div: _Div = ([a, b]) => {
   if (a === 0) return { error: "can't divide by 0" };
   return { value: b / a };
 }
+
+console.log(
+  R.compose(_split(','))('1,2')
+)
