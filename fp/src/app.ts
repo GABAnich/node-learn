@@ -21,7 +21,8 @@ const invalidUser: User = {
   email: 'bob@mail.com',
 };
 
-const imperative = (user: User) => {
+type F = (user: User) => { errMessage: string } | { email: string; text: string };
+const imperative: F = (user) => {
   if (user.isDeleted) return { errMessage: 'user is deleted' };
   if (!user.lastViewedVideo) return { errMessage: 'user has no lastViewedVideo' };
   return {
@@ -30,8 +31,8 @@ const imperative = (user: User) => {
   };
 };
 
-const declarative = (user: User) => {
-
+const declarative: F = (user) => {
+  return { errMessage: 'todo' };
 };
 
 console.log(imperative(validUser), declarative(validUser));
