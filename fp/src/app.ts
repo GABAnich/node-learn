@@ -33,31 +33,111 @@ console.log(
   'not_a_number', f('not_a_number'), '\n',
 );
 
-// {ValueOrError} Monad
+// Maybe Monad
 
-type ValueOrError<T> = { value: T } | {error: string };
-const wrapValueOrError = <T>(value: T): ValueOrError<T> => ({ value });
+// @ts-ignore
+const some = (v) => ({
+  v,
+  // @ts-ignore
+  map: (f) => some(f(v)),
+  // @ts-ignore
+  bind: (f) => f(v)
+});
 
-type _Split = (delim: string) => (str: string) => ValueOrError<string[]>
-const _split: _Split = (delim) => (str) => {
-  const value = str.split(delim);
-  if (value.length === 2) return { value };
-  return { error: `string has not delim ${delim}` };
-};
+const none = () => ({
+  v: null,
+  // @ts-ignore
+  map: (f) => none(),
+  // @ts-ignore
+  bind: (f) => none(),
+});
 
-type _StrToNumber = (str: string) => ValueOrError<number>;
-const _strToNumber: _StrToNumber = (str) => {
-  const value = parseFloat(str);
-  if (isNaN(value)) return { error: "not a number" };
-  return { value };
-};
-
-type _Div = (arr: number[]) => ValueOrError<number>;
-const _div: _Div = ([a, b]) => {
-  if (a === 0) return { error: "can't divide by 0" };
-  return { value: b / a };
+// @ts-ignore
+const _div = ([a, b]) => {
+  if (a === 0) return none();
+  return some(b / a);
 }
 
+const _strToNumber = (str: string) => {
+  const value = parseFloat(str);
+  if (isNaN(value)) return none();
+  return some(value);
+};
+
+// @ts-ignore
+const _split = (delim) => (str) => {
+  const value = str.split(delim);
+  if (value.length === 2) return some(value);
+  return none();
+};
+
+const double = (x: number) => x * 2;
+
 console.log(
-  R.compose(_split(','))('1,2')
-)
+  some('2,10')
+    .map(split(','))
+    .map(R.map(strToNumber))
+    .map(div)
+    .bind((x: number): number => x)
+);
+
+console.log(
+  '0,10',
+  some('0,10')
+    .bind(_split(','))
+    .bind(
+      R.compose(
+        // @ts-ignore
+        (arr) => arr.filter(Boolean).length === 2 ? some(arr) : none(),
+        R.map(strToNumber)
+      )
+    )
+    .bind(_div)
+    .v
+);
+
+console.log(
+  'x,10',
+  some('x,10')
+    .bind(_split(','))
+    .bind(
+      R.compose(
+        // @ts-ignore
+        (arr) => arr.filter(Boolean).length === 2 ? some(arr) : none(),
+        R.map(strToNumber)
+      )
+    )
+    .bind(_div)
+    .v
+);
+
+console.log(
+  '10',
+  some('10')
+    .bind(_split(','))
+    .bind(
+      R.compose(
+        // @ts-ignore
+        (arr) => arr.filter(Boolean).length === 2 ? some(arr) : none(),
+        R.map(strToNumber)
+      )
+    )
+    .bind(_div)
+    .v
+);
+
+console.log(
+  '2,10',
+  some('2,10')
+    .bind(_split(','))
+    .bind(
+      R.compose(
+        // @ts-ignore
+        (arr) => arr.filter(Boolean).length === 2 ? some(arr) : none(),
+        R.map(strToNumber)
+      )
+    )
+    .bind(_div)
+    .map(double)
+    .v
+);
