@@ -159,13 +159,21 @@ const __strToNumber = (str: string) => {
   return O.some(value);
 };
 
+const __div = ([a, b]: number[]) => {
+  if (a === 0) return O.none;
+  return O.some(b / a);
+}
 
 console.log(
   pipe(
     '3, 15',
     split(','),
     R.map(strToNumber),
-    div,
-    double,
+    __div,
+    O.map(double),
+    O.match(
+      () => 'no result', // onNone handler
+      (res) => `Result: ${res}` // onSome handler
+    )
   )
 );
