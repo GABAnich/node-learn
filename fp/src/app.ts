@@ -3,27 +3,36 @@ import { flow, pipe } from 'fp-ts/function'
 
 interface User {
   isDeleted: boolean;
+  name: string;
   email: string;
   role?: 'member',
   lastViewedVideo?: { title: string; likesNumber: number };
 };
 const validUser: User = {
   isDeleted: false,
-  email: 'u@mail.com',
+  name: 'alice',
+  email: 'alice@mail.com',
   role: 'member',
   lastViewedVideo: { title: 'video1', likesNumber: 255 },
 };
 const invalidUser: User = {
   isDeleted: true,
-  email: 'u2@mail.com',
+  name: 'bob',
+  email: 'bob@mail.com',
 };
 
 const imperative = (user: User) => {
-
+  if (user.isDeleted) return { errMessage: 'user is deleted' };
+  if (!user.lastViewedVideo) return { errMessage: 'user has no lastViewedVideo' };
+  return {
+    email: user.email,
+    text: `Hello, ${user.name.toUpperCase()}. The video ${user.lastViewedVideo.title} has ${user.lastViewedVideo.likesNumber} likes`,
+  };
 };
 
 const declarative = (user: User) => {
 
 };
 
-console.log(imperative(validUser));
+console.log(imperative(validUser), declarative(validUser));
+console.log(imperative(invalidUser), declarative(invalidUser));
