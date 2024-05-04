@@ -1,4 +1,6 @@
 import R from 'ramda';
+import * as O from 'fp-ts/Option'
+import { pipe } from 'fp-ts/function'
 
 type Split = (delim: string) => (str: string) => string[]
 const split: Split = (delim) => (str) => str.split(delim);
@@ -8,6 +10,9 @@ const strToNumber: StrToNumber = (str) => parseFloat(str);
 
 type Div = (arr: number[]) => number;
 const div: Div = ([a, b]) => b / a;
+
+type Double = (x: number) => number;
+const double: Double = (x) => x * 2;
 
 console.log(
   split(',')('1,2'),
@@ -70,8 +75,6 @@ const _split = (delim) => (str) => {
   if (value.length === 2) return some(value);
   return none();
 };
-
-const double = (x: number) => x * 2;
 
 console.log(
   some('2,10')
@@ -140,4 +143,29 @@ console.log(
     .bind(_div)
     .map(double)
     .v
+);
+
+console.log('using fp-ts\n\n\n');
+
+const __split = (delim: string) => (str: string) => {
+  const value = str.split(delim);
+  if (value.length === 2) return O.some(value);
+  return O.none;
+}
+
+const __strToNumber = (str: string) => {
+  const value = parseFloat(str);
+  if (isNaN(value)) return O.none;
+  return O.some(value);
+};
+
+
+console.log(
+  pipe(
+    '3, 15',
+    split(','),
+    R.map(strToNumber),
+    div,
+    double,
+  )
 );
