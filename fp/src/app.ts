@@ -153,10 +153,10 @@ const __split = (delim: string) => (str: string) => {
   return O.none;
 }
 
-const __strToNumber = (str: string) => {
-  const value = parseFloat(str);
-  if (isNaN(value)) return O.none;
-  return O.some(value);
+const __strsToNumber = (strs: string[]) => {
+  const values = strs.map(strToNumber);
+  if (values.filter(Boolean).length === 2) return O.some(values);
+  return O.none;
 };
 
 const __div = ([a, b]: number[]) => {
@@ -166,10 +166,10 @@ const __div = ([a, b]: number[]) => {
 
 console.log(
   pipe(
-    '3, 15',
-    split(','),
-    R.map(strToNumber),
-    __div,
+    '3,15',
+    __split(','),
+    O.flatMap(__strsToNumber),
+    O.flatMap(__div),
     O.map(double),
     O.match(
       () => 'no result', // onNone handler
