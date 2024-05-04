@@ -31,9 +31,10 @@ const imperative: F = (user) => {
   };
 };
 
-const declarative: F = (user) => {
-  return { errMessage: 'todo' };
-};
+const declarative: F = (user) => pipe(
+  user,
+  () => ({ errMessage: 'todo' }),
+);
 
 console.log(imperative(validUser), declarative(validUser));
 console.log(imperative(invalidUser), declarative(invalidUser));
