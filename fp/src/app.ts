@@ -35,9 +35,11 @@ console.log(
 
 // {ValueOrError} Monad
 
-type ValueOrError<T> = {
-  value?: T;
-  error?: string;
+type ValueOrError<T> = { value: T } | {error: string };
+const wrapValueOrError = <T>(value: T): ValueOrError<T> => ({ value });
+
+type _Div = (arr: number[]) => ValueOrError<number>;
+const _div: _Div = ([a, b]) => {
+  if (a === 0) return { error: "can't divide by 0" };
+  return { value: b / a };
 }
-type WrapValueOrError = <T>(value: T) => ValueOrError<T>
-const wrapValueOrError: WrapValueOrError = (value) => ({ value });
